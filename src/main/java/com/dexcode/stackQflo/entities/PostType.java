@@ -20,6 +20,7 @@ public class PostType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postTypeId;
 
+    @Column(unique = true, nullable = false)
     private String typeName;
 
     @OneToMany(mappedBy = "postType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
