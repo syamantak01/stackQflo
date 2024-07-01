@@ -32,12 +32,5 @@ public class User {
     @JsonManagedReference
     private Role role;
 
-//    @Override
-//    public String toString() {
-//        return "User{" +
-//                "userId=" + userId +
-//                ", username='" + username + '\'' +
-//                '}';
-//    }
 
 }

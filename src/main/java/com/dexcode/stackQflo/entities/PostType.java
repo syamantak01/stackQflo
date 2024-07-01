@@ -26,12 +26,5 @@ public class PostType {
     @JsonBackReference
     private Set<Post> posts;
 
-//    @Override
-//    public String toString() {
-//        return "PostType{" +
-//                "postTypeId=" + postTypeId +
-//                ", typeName='" + typeName + '\'' +
-//                '}';
-//    }
 }
 

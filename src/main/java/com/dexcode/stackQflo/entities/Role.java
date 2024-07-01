@@ -13,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = "users")
 public class Role {
 
     @Id
@@ -26,12 +27,4 @@ public class Role {
     @JsonBackReference
     private Set<User> users;
 
-//    @Override
-//    public String toString() {
-//        return "Role{" +
-//                "roleId=" + roleId +
-//                ", roleName='" + roleName + '\'' +
-//                ", users=" + (users != null ? users.size() : "null") +
-//                '}';
-//    }
 }
