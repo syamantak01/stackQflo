@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<String> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex){
         return ResponseEntity.status(400).body(ex.getMessage());
     }
@@ -38,6 +38,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return ResponseEntity.status(404).body(ex.getMessage());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleInvalidOperationException(InvalidOperationException ex){
         return ResponseEntity.status(404).body(ex.getMessage());
     }
 }

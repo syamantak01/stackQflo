@@ -37,20 +37,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO updateUser(UserDTO userDTO, Long userId) {
         return userRepository.findById(userId).map(existingUser -> {
-            if(userDTO.getUsername() != null){
+            if(userDTO.getUsername() != null && !userDTO.getUsername().isBlank()){
                 existingUser.setUsername(userDTO.getUsername());
             }
-            if(userDTO.getEmail() != null){
+            if(userDTO.getEmail() != null && !userDTO.getEmail().isBlank()){
                 existingUser.setEmail(userDTO.getEmail());
             }
-            if(userDTO.getPassword() != null){
+            if(userDTO.getPassword() != null && !userDTO.getPassword().isBlank()){
                 existingUser.setPassword(userDTO.getPassword());
             }
             if(userDTO.getAbout() != null){
                 existingUser.setAbout(userDTO.getAbout());
             }
             if(userDTO.getRoleId() != null){
-                roleRepository.findById(userDTO.getRoleId()).ifPresent(existingUser::setRole);
+                roleRepository.findById(userDTO.getRoleId())
+                        .ifPresentOrElse(existingUser::setRole, () -> {
+                            throw new ResourceNotFoundException("Role", "roleId", userDTO.getRoleId());
+                        });
             }
 
             User updatedUser = userRepository.save(existingUser);

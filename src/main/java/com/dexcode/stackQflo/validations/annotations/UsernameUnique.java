@@ -1,4 +1,4 @@
-package com.dexcode.stackQflo.validations;
+package com.dexcode.stackQflo.validations.annotations;
 
 import com.dexcode.stackQflo.validations.validators.UsernameUniqueValidator;
 import jakarta.validation.Constraint;

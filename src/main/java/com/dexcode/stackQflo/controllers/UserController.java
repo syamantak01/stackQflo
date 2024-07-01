@@ -2,9 +2,12 @@ package com.dexcode.stackQflo.controllers;
 
 import com.dexcode.stackQflo.dto.UserDTO;
 import com.dexcode.stackQflo.services.UserService;
+import com.dexcode.stackQflo.validations.ValidationGroups;
 import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -18,7 +21,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> createUser(@Validated({ValidationGroups.Create.class, Default.class}) @RequestBody UserDTO userDTO) {
         UserDTO createdUser = userService.createUser((userDTO));
         URI resourceUri = URI.create(String.format("/api/users/%s", createdUser.getUserId()));
         return ResponseEntity.created(resourceUri).body(createdUser);
@@ -35,7 +38,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserDTO userDTO, @PathVariable Long userId) {
+    public ResponseEntity<UserDTO> updateUser(@Validated({ValidationGroups.Update.class, Default.class}) @RequestBody UserDTO userDTO, @PathVariable Long userId) {
         return ResponseEntity.ok(userService.updateUser(userDTO, userId));
     }
 

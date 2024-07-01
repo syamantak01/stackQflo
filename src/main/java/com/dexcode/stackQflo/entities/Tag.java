@@ -1,11 +1,11 @@
 package com.dexcode.stackQflo.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.*;
 
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
@@ -20,14 +20,14 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tagId;
 
+    @Column(unique = true, nullable = false)
     private String tagName;
+
     private String description;
 
-    @ManyToMany
-    @JoinTable(
-            name = "post_tag",
-            joinColumns = @JoinColumn(name = "tag_id"),
-            inverseJoinColumns = @JoinColumn(name = "post_id")
-    )
+    @ManyToMany(mappedBy = "tags", cascade = CascadeType.ALL)
     private Set<Post> posts;
+
+
+
 }

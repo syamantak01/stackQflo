@@ -1,11 +1,9 @@
 package com.dexcode.stackQflo.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.*;
 
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
@@ -15,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = "posts")
 public class PostType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +23,15 @@ public class PostType {
     private String typeName;
 
     @OneToMany(mappedBy = "postType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference
     private Set<Post> posts;
+
+//    @Override
+//    public String toString() {
+//        return "PostType{" +
+//                "postTypeId=" + postTypeId +
+//                ", typeName='" + typeName + '\'' +
+//                '}';
+//    }
 }
 

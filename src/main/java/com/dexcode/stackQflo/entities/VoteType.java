@@ -20,6 +20,7 @@ public class VoteType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long voteTypeId;
 
+    @Column(unique = true, nullable = false)
     private String voteType;
 
     @OneToMany(mappedBy = "voteType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

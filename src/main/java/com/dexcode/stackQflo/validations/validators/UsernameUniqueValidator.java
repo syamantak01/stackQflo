@@ -1,7 +1,7 @@
 package com.dexcode.stackQflo.validations.validators;
 
 import com.dexcode.stackQflo.repositories.UserRepository;
-import com.dexcode.stackQflo.validations.UsernameUnique;
+import com.dexcode.stackQflo.validations.annotations.UsernameUnique;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
 package com.dexcode.stackQflo.validations.validators;
 
 import com.dexcode.stackQflo.repositories.RoleRepository;
-import com.dexcode.stackQflo.validations.RoleIdExists;
+import com.dexcode.stackQflo.validations.annotations.RoleIdExists;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;

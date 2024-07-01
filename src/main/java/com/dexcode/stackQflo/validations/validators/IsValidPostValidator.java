@@ -7,14 +7,14 @@ import com.dexcode.stackQflo.repositories.PostRepository;
 import com.dexcode.stackQflo.repositories.PostTypeRepository;
 import com.dexcode.stackQflo.repositories.TagRepository;
 import com.dexcode.stackQflo.repositories.UserRepository;
-import com.dexcode.stackQflo.validations.annotations.IsValidPostToCreate;
+import com.dexcode.stackQflo.validations.annotations.IsValidPost;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
 
-public class IsValidPostToCreateValidator implements ConstraintValidator<IsValidPostToCreate, PostDTO> {
+public class IsValidPostValidator implements ConstraintValidator<IsValidPost, PostDTO> {
 
     @Autowired
     private UserRepository userRepository;
@@ -29,7 +29,7 @@ public class IsValidPostToCreateValidator implements ConstraintValidator<IsValid
     private TagRepository tagRepository;
 
     @Override
-    public void initialize(IsValidPostToCreate constraintAnnotation) {
+    public void initialize(IsValidPost constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
@@ -49,7 +49,8 @@ public class IsValidPostToCreateValidator implements ConstraintValidator<IsValid
         Set<Long> tagIds = postDTO.getTagIds();
 
         if(userId == null || postTypeId == null){
-            return true;
+            return true;    // User ID and postType ID is mandatory in case post is created, which will be taken care by @NotBlank annotation
+                            // User ID and postType ID is not mandatory in case post is updated.
         }
 
 
@@ -92,14 +93,6 @@ public class IsValidPostToCreateValidator implements ConstraintValidator<IsValid
                 return false;
             }
 
-            // Parent Question Post of the Answer Post and the Answer Post cannot be the same - only update
-            if(parentQuestionId.equals(postDTO.getPostId())){
-                constraintValidatorContext.disableDefaultConstraintViolation();
-                constraintValidatorContext
-                        .buildConstraintViolationWithTemplate("Parent Question ID and Answer Post ID cannot be same")
-                        .addConstraintViolation();
-                return false;
-            }
 
             // if post associated with Parent Question ID does not exist
             if(!postRepository.existsById(parentQuestionId)){
@@ -130,6 +123,17 @@ public class IsValidPostToCreateValidator implements ConstraintValidator<IsValid
         if(postType.getTypeName().equalsIgnoreCase("question")){
             Long acceptedAnswerId = postDTO.getAcceptedAnswerId();
 
+            //Parent Question of Question post cannot exist
+            if(postDTO.getParentQuestionId() != null){
+                constraintValidatorContext.disableDefaultConstraintViolation();
+                constraintValidatorContext
+                        .buildConstraintViolationWithTemplate("Question post cannot have parent question")
+                        .addPropertyNode("parentQuestonId")
+                        .addConstraintViolation();
+                return false;
+
+            }
+
             // Accepted Answer is not mandatory
             if(acceptedAnswerId != null){
 
@@ -138,6 +142,7 @@ public class IsValidPostToCreateValidator implements ConstraintValidator<IsValid
                     constraintValidatorContext.disableDefaultConstraintViolation();
                     constraintValidatorContext
                             .buildConstraintViolationWithTemplate("Accepted Answer Post cannot be the same as Question Post")
+                            .addPropertyNode("acceptedAnswerId")
                             .addConstraintViolation();
                     return false;
                 }
