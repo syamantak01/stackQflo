@@ -19,7 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(exclude = {"tags", "answers", })
+@EqualsAndHashCode(exclude = {"tags", "answers"})
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
