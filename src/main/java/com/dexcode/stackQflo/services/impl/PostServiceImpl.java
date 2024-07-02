@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -140,11 +141,22 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePost(Long postId) {
-        if(!postRepository.existsById(postId)){
-            throw new ResourceNotFoundException("Post", "postId", postId);
-        }
-        postRepository.deleteById(postId);
 
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "postId", postId));
+
+        // post is of answer type
+        if(post.getAnswers().isEmpty()){
+
+            Post parentQuestion = post.getParentQuestion();
+
+            // from parent question's answers list remove the post
+            parentQuestion.getAnswers().remove(post);
+
+            // set the parent question to null;
+            post.setParentQuestion(null);
+
+        }
+        postRepository.delete(post);
     }
 
     private PostDTO convertToDTO(Post post){
@@ -160,7 +172,6 @@ public class PostServiceImpl implements PostService {
 
             postDTO.setTagIds(tagIds);
         }
-
 
         return postDTO;
     }

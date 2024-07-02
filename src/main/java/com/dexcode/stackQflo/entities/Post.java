@@ -19,83 +19,69 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(exclude = {"tags", "answers"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long postId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @EqualsAndHashCode.Exclude
     private User user;
 
     @Column(nullable = false)
+    @EqualsAndHashCode.Include
     private String title;
 
     @Column(nullable = false)
+    @EqualsAndHashCode.Include
     private String description;
 
+    @EqualsAndHashCode.Include
     private String image;
 
     @CreationTimestamp
+    @EqualsAndHashCode.Include
     private LocalDateTime timestamp;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_question_id")
+    @EqualsAndHashCode.Exclude
+    @JsonManagedReference
     private Post parentQuestion;
 
     @OneToOne
     @JoinColumn(name = "accepted_answer_id")
+    @EqualsAndHashCode.Exclude
     private Post acceptedAnswer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_type_id", nullable = false)
     @JsonManagedReference
+    @EqualsAndHashCode.Exclude
     private PostType postType;
 
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "post_tag",
-            joinColumns = @JoinColumn(name = "post_tag"),
+            joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
+    @EqualsAndHashCode.Exclude
     private Set<Tag> tags;
 
     @OneToMany(mappedBy = "parentQuestion", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonBackReference
     private Set<Post> answers;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
     private Set<Vote> votes;
-
-    @PreRemove
-    private void preRemove() {
-
-        if (this.postType != null && "question".equalsIgnoreCase(this.postType.getTypeName())) {
-            for (Post answer : this.answers) {
-                answer.setParentQuestion(null);
-            }
-        }
-
-        if(this.postType != null && "answer".equalsIgnoreCase(this.postType.getTypeName())){
-            if (this.parentQuestion != null) {
-                this.parentQuestion.getAnswers().remove(this);
-                this.setParentQuestion(null);
-            }
-        }
-    }
-
-    public void addAnswer(Post answerPost){
-        answers.add(answerPost);
-        answerPost.setParentQuestion(this);
-    }
-
-    public void removeAnswer(Post answerPost){
-        answers.remove(answerPost);
-        answerPost.setParentQuestion(null);
-    }
-
-
 
 
 }
