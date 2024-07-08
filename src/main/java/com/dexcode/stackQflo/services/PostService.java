@@ -11,6 +11,13 @@ public interface PostService {
     //Read
     List<PostDTO> getAllPosts();
 
+    // Get Posts by Tags
+    List<PostDTO> findPostsByTagsTagId(Long tagId);
+
+    // Get Posts by Users
+    List<PostDTO> findPostsByUserUserId(Long userId);
+
+    // Get Post by Id
     PostDTO getPostById(Long postId);
 
     //Update
@@ -18,4 +25,6 @@ public interface PostService {
 
     //Delete
     void deletePost(Long postId);
+
+
 }

@@ -38,6 +38,16 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostById(postId));
     }
 
+    @GetMapping("/tag/{tagId}")
+    public ResponseEntity<List<PostDTO>> getPostsByTag(@PathVariable Long tagId){
+        return ResponseEntity.ok(postService.findPostsByTagsTagId(tagId));
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<PostDTO>> getPostsByUser(@PathVariable Long userId){
+        return ResponseEntity.ok(postService.findPostsByUserUserId(userId));
+    }
+
     @PutMapping("/{postId}")
     public ResponseEntity<PostDTO> updatePost(@Validated({ValidationGroups.Update.class, Default.class}) @RequestBody PostDTO postDTO, @PathVariable Long postId){
         PostDTO updatedPost = postService.updatePost(postDTO, postId);

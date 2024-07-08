@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,6 +51,31 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostDTO> getAllPosts() {
         return postRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PostDTO> findPostsByTagsTagId(Long tagId){
+
+        if(!tagRepository.existsById(tagId)){
+            throw new ResourceNotFoundException("Tag", "tagId", tagId);
+        }
+
+        return postRepository.findPostsByTagsTagId(tagId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PostDTO> findPostsByUserUserId(Long userId){
+        if(!userRepository.existsById(userId)){
+            throw new ResourceNotFoundException("User", "userId", userId);
+        }
+
+        return postRepository.findPostsByUserUserId(userId)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -145,7 +169,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "postId", postId));
 
         // post is of answer type
-        if(post.getAnswers().isEmpty()){
+        if(post.getParentQuestion() != null){
 
             Post parentQuestion = post.getParentQuestion();
 
@@ -154,8 +178,27 @@ public class PostServiceImpl implements PostService {
 
             // set the parent question to null;
             post.setParentQuestion(null);
-
         }
+
+        // post if of question type
+        else{
+
+            // remove answer posts
+            for(Post answer: post.getAnswers()){
+                this.deletePost(answer.getPostId());
+            }
+
+            Set<Tag> tags = post.getTags();
+
+            //set the tags null
+            post.setTags(null);
+
+            // remove posts from tag dto to maintain consistency in bidirectional relation
+            for(Tag tag : tags){
+                tag.getPosts().remove(post);
+            }
+        }
+
         postRepository.delete(post);
     }
 
