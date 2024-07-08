@@ -10,9 +10,14 @@ import com.dexcode.stackQflo.repositories.PostRepository;
 import com.dexcode.stackQflo.repositories.PostTypeRepository;
 import com.dexcode.stackQflo.repositories.TagRepository;
 import com.dexcode.stackQflo.repositories.UserRepository;
+import com.dexcode.stackQflo.response.AnswerResponse;
 import com.dexcode.stackQflo.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -90,6 +95,40 @@ public class PostServiceImpl implements PostService {
                         "postId",
                         postId)
                 );
+    }
+
+    @Override
+    public AnswerResponse getAnswerPosts(Long parentQuestionId, Integer pageNumber, Integer pageSize, String sortBy, String direction) {
+        Post questionPost = postRepository.findById(parentQuestionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post", "postId", parentQuestionId));
+
+        if(!questionPost.getPostType().getTypeName().equalsIgnoreCase("question")){
+            throw new InvalidOperationException(String.format("Can't get answers of post with id: %d as the post is not of question type", parentQuestionId));
+        }
+
+        Pageable p = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
+
+        if(direction.equalsIgnoreCase("DESC")){
+            p = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy).descending());
+        }
+
+        Page<Post> page = postRepository.findPostsByParentQuestionPostId(parentQuestionId, p);
+        List<Post> answers = page.getContent();
+
+        List<PostDTO> answerContent = answers
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+
+        AnswerResponse answerResponse = new AnswerResponse();
+        answerResponse.setAnswers(answerContent);
+        answerResponse.setPageNumber(page.getNumber());
+        answerResponse.setPageSize(page.getSize());
+        answerResponse.setTotalAnswers((int) page.getTotalElements());
+        answerResponse.setTotalPages(page.getTotalPages());
+        answerResponse.setLastPage(page.isLast());
+
+        return answerResponse;
     }
 
     @Override

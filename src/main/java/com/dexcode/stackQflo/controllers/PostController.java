@@ -2,6 +2,7 @@ package com.dexcode.stackQflo.controllers;
 
 import com.dexcode.stackQflo.dto.PostDTO;
 import com.dexcode.stackQflo.entities.Post;
+import com.dexcode.stackQflo.response.AnswerResponse;
 import com.dexcode.stackQflo.services.PostService;
 import com.dexcode.stackQflo.validations.ValidationGroups;
 import jakarta.validation.Valid;
@@ -46,6 +47,16 @@ public class PostController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<PostDTO>> getPostsByUser(@PathVariable Long userId){
         return ResponseEntity.ok(postService.findPostsByUserUserId(userId));
+    }
+
+    @GetMapping("{postId}/answers")
+    public ResponseEntity<AnswerResponse> getAnswers(@PathVariable Long postId,
+                                                    @RequestParam(defaultValue = "1", required = false) Integer pageNumber,
+                                                    @RequestParam(defaultValue = "5", required = false) Integer pageSize,
+                                                    @RequestParam(defaultValue = "timestamp", required = false) String sortBy,
+                                                    @RequestParam(defaultValue = "ASC", required = false) String direction
+                                                    ){
+        return ResponseEntity.ok(postService.getAnswerPosts(postId, pageNumber, pageSize, sortBy, direction));
     }
 
     @PutMapping("/{postId}")

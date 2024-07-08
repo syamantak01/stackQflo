@@ -1,6 +1,7 @@
 package com.dexcode.stackQflo.services;
 
 import com.dexcode.stackQflo.dto.PostDTO;
+import com.dexcode.stackQflo.response.AnswerResponse;
 
 import java.util.List;
 
@@ -19,6 +20,9 @@ public interface PostService {
 
     // Get Post by Id
     PostDTO getPostById(Long postId);
+
+    // Get Answers
+    AnswerResponse getAnswerPosts(Long parentQuestionId, Integer pageNumber, Integer pageSize, String sortBy, String direction);
 
     //Update
     PostDTO updatePost(PostDTO postDTO, Long postId);
