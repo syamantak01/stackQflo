@@ -15,4 +15,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findPostsByUserUserId(Long userId);
 
     Page<Post> findPostsByParentQuestionPostId(Long questionId, Pageable p);
+
+    List<Post> findByTitleContaining(String keyword);
 }

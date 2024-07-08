@@ -241,6 +241,15 @@ public class PostServiceImpl implements PostService {
         postRepository.delete(post);
     }
 
+    @Override
+    public List<PostDTO> searchPost(String keyword) {
+        return postRepository.findByTitleContaining(keyword)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+
+    }
+
     private PostDTO convertToDTO(Post post){
         PostDTO postDTO = modelMapper.map(post, PostDTO.class);
 

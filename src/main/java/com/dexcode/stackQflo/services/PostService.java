@@ -30,5 +30,6 @@ public interface PostService {
     //Delete
     void deletePost(Long postId);
 
+    List<PostDTO> searchPost(String keyword);
 
 }

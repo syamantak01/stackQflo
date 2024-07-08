@@ -1,5 +1,6 @@
 package com.dexcode.stackQflo.controllers;
 
+import com.dexcode.stackQflo.config.AppConstants;
 import com.dexcode.stackQflo.dto.PostDTO;
 import com.dexcode.stackQflo.entities.Post;
 import com.dexcode.stackQflo.response.AnswerResponse;
@@ -51,10 +52,10 @@ public class PostController {
 
     @GetMapping("{postId}/answers")
     public ResponseEntity<AnswerResponse> getAnswers(@PathVariable Long postId,
-                                                    @RequestParam(defaultValue = "1", required = false) Integer pageNumber,
-                                                    @RequestParam(defaultValue = "5", required = false) Integer pageSize,
-                                                    @RequestParam(defaultValue = "timestamp", required = false) String sortBy,
-                                                    @RequestParam(defaultValue = "ASC", required = false) String direction
+                                                    @RequestParam(defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+                                                    @RequestParam(defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+                                                    @RequestParam(defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+                                                    @RequestParam(defaultValue = AppConstants.SORT_DIR, required = false) String direction
                                                     ){
         return ResponseEntity.ok(postService.getAnswerPosts(postId, pageNumber, pageSize, sortBy, direction));
     }
@@ -69,6 +70,12 @@ public class PostController {
     public ResponseEntity<?> deletePost(@PathVariable Long postId){
         postService.deletePost(postId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search/{keyword}")
+    public ResponseEntity<List<PostDTO>> searchPost(@PathVariable String keyword){
+        List<PostDTO> searchedPosts = postService.searchPost(keyword);
+        return ResponseEntity.ok(searchedPosts);
     }
 
 

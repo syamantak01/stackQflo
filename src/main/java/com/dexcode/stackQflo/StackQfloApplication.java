@@ -10,6 +10,7 @@ public class StackQfloApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(StackQfloApplication.class, args);
+
 	}
 
 	@Bean
