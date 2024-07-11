@@ -4,15 +4,25 @@ import com.dexcode.stackQflo.config.AppConstants;
 import com.dexcode.stackQflo.dto.PostDTO;
 import com.dexcode.stackQflo.entities.Post;
 import com.dexcode.stackQflo.response.AnswerResponse;
+import com.dexcode.stackQflo.services.FileService;
 import com.dexcode.stackQflo.services.PostService;
 import com.dexcode.stackQflo.validations.ValidationGroups;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
@@ -22,6 +32,12 @@ public class PostController {
 
     @Autowired
     private PostService postService;
+
+    @Autowired
+    private FileService fileService;
+
+    @Value("${project.image}")
+    private String path;
 
     @PostMapping
     public ResponseEntity<PostDTO> createPost(@Validated({ValidationGroups.Create.class, Default.class}) @RequestBody PostDTO postDTO){
@@ -76,6 +92,31 @@ public class PostController {
     public ResponseEntity<List<PostDTO>> searchPost(@PathVariable String keyword){
         List<PostDTO> searchedPosts = postService.searchPost(keyword);
         return ResponseEntity.ok(searchedPosts);
+    }
+
+    // upload image
+    @PostMapping("/{postId}/image/upload")
+    public ResponseEntity<PostDTO> uploadPostImage(@RequestParam MultipartFile image,
+                                                        @PathVariable Long postId){
+        try {
+            PostDTO postDTO = postService.getPostById(postId);
+            String fileName = fileService.uploadImage(path, image);
+            postDTO.setImage(fileName);
+            PostDTO updatedPost = postService.updatePost(postDTO, postId);
+
+            return ResponseEntity.ok(updatedPost);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // serve image
+    @GetMapping(value = "/image/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public void downloadImage(@PathVariable String imageName, HttpServletResponse response) throws IOException {
+        InputStream resource = fileService.getResource(path, imageName);
+        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        StreamUtils.copy(resource, response.getOutputStream());
     }
 
 

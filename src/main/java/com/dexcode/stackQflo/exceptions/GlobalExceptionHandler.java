@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +44,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<String> handleInvalidOperationException(InvalidOperationException ex){
+        return ResponseEntity.status(404).body(ex.getMessage());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleFileNotFoundException(FileNotFoundException ex){
         return ResponseEntity.status(404).body(ex.getMessage());
     }
 }
