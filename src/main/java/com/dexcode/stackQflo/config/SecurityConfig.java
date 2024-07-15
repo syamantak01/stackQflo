@@ -43,8 +43,10 @@ public class SecurityConfig {
     public SecurityFilterChain configure(HttpSecurity http) throws Exception{
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests((auth) -> auth.requestMatchers(("/api/auth/**")).permitAll())
-                .authorizeHttpRequests((auth) -> auth.anyRequest().authenticated())
+                .authorizeHttpRequests((auth) -> {
+                    auth.requestMatchers(("/api/auth/**")).permitAll();
+                    auth.anyRequest().authenticated();
+                })
                 .exceptionHandling((exception) -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
