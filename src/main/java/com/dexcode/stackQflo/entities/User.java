@@ -35,13 +35,13 @@ public class User {
     @EqualsAndHashCode.Include
     private String about;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     @JsonManagedReference
     @EqualsAndHashCode.Exclude
     private Role role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonBackReference
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

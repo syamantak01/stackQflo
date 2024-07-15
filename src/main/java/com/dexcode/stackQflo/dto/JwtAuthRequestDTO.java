@@ -3,7 +3,7 @@ package com.dexcode.stackQflo.dto;
 import lombok.Data;
 
 @Data
-public class JwtAuthRequest {
-    private String userName;
+public class JwtAuthRequestDTO {
+    private String username;
     private String password;
 }

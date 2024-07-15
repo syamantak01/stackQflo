@@ -4,6 +4,7 @@ import com.dexcode.stackQflo.validations.ValidationGroups;
 import com.dexcode.stackQflo.validations.annotations.EmailUnique;
 import com.dexcode.stackQflo.validations.annotations.RoleIdExists;
 import com.dexcode.stackQflo.validations.annotations.UsernameUnique;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +32,7 @@ public class UserDTO {
 
     @NotBlank(message = "Password cannot be null or empty", groups = ValidationGroups.Create.class)
     @Size(min = 8, message = "Password must be at least 8 characters", groups = {ValidationGroups.Create.class, ValidationGroups.Update.class})
+    @JsonIgnore
     private String password;
 
     private String about;

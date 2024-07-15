@@ -8,6 +8,8 @@ import com.dexcode.stackQflo.repositories.UserRepository;
 import com.dexcode.stackQflo.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,10 +27,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public UserDTO createUser(UserDTO userDTO) {
 
         User user = convertToEntity(userDTO);
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         User savedUser = userRepository.save(user);
 
         return convertToDTO(savedUser);
@@ -44,7 +50,7 @@ public class UserServiceImpl implements UserService {
                 existingUser.setEmail(userDTO.getEmail());
             }
             if(userDTO.getPassword() != null && !userDTO.getPassword().isBlank()){
-                existingUser.setPassword(userDTO.getPassword());
+                existingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             }
             if(userDTO.getAbout() != null){
                 existingUser.setAbout(userDTO.getAbout());

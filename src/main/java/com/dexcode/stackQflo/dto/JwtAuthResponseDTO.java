@@ -3,6 +3,6 @@ package com.dexcode.stackQflo.dto;
 import lombok.Data;
 
 @Data
-public class JwtAuthResponse {
+public class JwtAuthResponseDTO {
     private String token;
 }
