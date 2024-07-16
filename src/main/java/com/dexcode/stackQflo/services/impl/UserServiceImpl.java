@@ -8,6 +8,7 @@ import com.dexcode.stackQflo.repositories.UserRepository;
 import com.dexcode.stackQflo.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -67,6 +68,7 @@ public class UserServiceImpl implements UserService {
         }).orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public void deleteUser(Long userId) {
         if (!userRepository.existsById(userId)) {
@@ -77,6 +79,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public UserDTO getUserById(Long userId) {
         return userRepository.findById(userId)
                 .map(this::convertToDTO)
@@ -84,6 +87,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
